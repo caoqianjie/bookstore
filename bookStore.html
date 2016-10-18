@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="appModule">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="bootstrap.css">
+    <style>
+        [ng-cloak]{
+            display:none;
+        }
+    </style>
+</head>
+<body ng-controller="myCtrl">
+<h1 class="h1 text-center">欢迎来到CQJ’s书店</h1>
+<!--<ul class="list-group">
+    <li class="list-group-item">书的名字{{oneBook.name}}</li>
+    <li class="list-group-item">书的价格{{oneBook.price}}</li>
+</ul>-->
+<div class=" container">
+    <div class="row">
+        <div class="col-md-6"><label>输入ID查询:</label><input type="text" ng-model="query" ng-model-options="{debounce:500}"></div>
+        <div class="col-md-6"><button class="btn btn-primary btn-sm" data-toggle="modal" data-target=".modal1" ng-click="newList()">新书入库</button></div>
+    </div>
+    <div class="row bg-success" ng-cloak>
+        <div class="col-md-2">书名</div>
+        <div class="col-md-4">{{oneBook.name}}</div>
+        <div class="col-md-2">价格</div>
+        <div class="col-md-4">{{oneBook.price}}</div>
+    </div>
+    <label class="h3 label-default">我的书柜</label>
+    <table class="table table-bordered text-center">
+        <tr>
+            <td>书的名字</td>
+            <td>书的价格</td>
+            <td>书的数量</td>
+            <td>小计</td>
+            <td colspan="2">操作</td>
+        </tr>
+        <tr ng-repeat="book in books track by $index" ng-cloak>
+            <td>{{book.name}}</td>
+            <td>{{book.price}}</td>
+            <td><button ng-click="decrease(book)" ng-disabled="!book.count">-</button><input type="text" ng-model="book.count"><button ng-click="increase(book)">+</button></td>
+            <td>{{book.count*book.price}}</td>
+            <td><button class="btn btn-primary" data-toggle="modal" data-target=".modal2" ng-click="change(book)">修改</button></td>
+            <td><button class="btn btn-danger" ng-click="del(book)" >删除</button></td>
+        </tr>
+    </table>
+</div>
+<div class="modal fade modal2">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">修改名字</h4>
+            </div>
+            <div class="modal-body">
+                图书的名字<input type="text" ng-model="b.name">
+                图书的价格<input type="text" ng-model="b.price">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" ng-click="update(b)">保存修改</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade modal1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">新增书籍</h4>
+            </div>
+            <div class="modal-body">
+                图书的名字<input type="text" ng-model="c.name">
+                图书的价格<input type="text" ng-model="c.price">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" ng-click="add()">保存</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<script src="./js/jquery.min.js"></script>
+<script src="./js/angular.js"></script>
+<script src="./js/angular-resource.js"></script>
+<script src="./js/bootstrap.js"></script>
+<script>
+    var app = angular.module('appModule',['ngResource']);
+    app.factory('book',function ($resource) {
+        return $resource('/book/:id',null,{
+            update:{
+                method:'PUT'
+            }
+        });
+    });
+    app.controller('myCtrl',function ($scope,$http,book) {
+        $scope.books = book.query();
+       /* $http.get('/book').success(function (data) {
+            $scope.books =data;
+        });*/
+       $scope.oneBook = {};
+       $scope.$watch('query',function (newVal, oldVal) {
+           if(newVal) {
+               $scope.oneBook = book.get({id:newVal});
+               //console.log($scope.oneBook);
+           }
+       });
+        $scope.increase = function (book) {
+            book.count++;
+        };
+        $scope.decrease = function (book) {
+            book.count--;
+        };
+        $scope.del = function (b) {
+            book.delete(b).$promise.then(function () {
+                $scope.books = book.query();
+            });
+        };
+        $scope.change = function (b) {
+            $scope.b = JSON.parse(JSON.stringify(b));
+        };
+        $scope.update = function (b) {
+            //b放在请求体重
+            book.update({id:b.id},b).$promise.then(function (data) {
+                $scope.books = $scope.books.map(function (item) {
+                    if(item.id == data.id){
+                        return data;
+                    }
+                    return item;
+                });
+                $('.modal2').modal('hide');
+            });//angular中修改必须要手动传入id,告诉服务器端通过di进行查询
+        };
+        $scope.newList = function () {
+            $scope.c = {};
+        };
+        $scope.add = function () {
+            book.save($scope.c).$promise.then(function () {
+                $scope.books = book.query();
+            });
+            $('.modal1').modal('hide');
+        };
+    });
+</script>
+</body>
+</html>
