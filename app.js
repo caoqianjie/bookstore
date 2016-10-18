@@ -7,7 +7,7 @@ var books = [
     {name:'bootstrapjs',price:55,id:5,count:1}
 ];
 var app = express();
-app.listen(3000);
+app.listen(process.env.PORT || 3000);
 var bodyParser = require('body-parser');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:true}));
@@ -49,3 +49,4 @@ app.route('/book/:id').get(function (req, res) {
     });
     res.send({});
 });
+module.exports = app;
