@@ -4,7 +4,8 @@
   "description": "create a simple bookstore with angular and express",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve": "node app.js"
   },
   "repository": {
     "type": "git",
