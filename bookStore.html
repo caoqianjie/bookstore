@@ -2,7 +2,7 @@
 <html lang="en" ng-app="appModule">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>bookstore</title>
     <link rel="stylesheet" href="./css/bootstrap.css">
     <style>
         [ng-cloak]{
@@ -18,7 +18,7 @@
 </ul>-->
 <div class=" container">
     <div class="row">
-        <div class="col-md-6"><label>输入ID查询:</label><input type="text" ng-model="query" ng-model-options="{debounce:500}"></div>
+        <div class="col-md-6"><label>输入ID查询书籍:</label><input type="text" ng-model="query" ng-model-options="{debounce:500}"></div>
         <div class="col-md-6"><button class="btn btn-primary btn-sm" data-toggle="modal" data-target=".modal1" ng-click="newList()">新书入库</button></div>
     </div>
     <div class="row bg-success" ng-cloak>
@@ -30,9 +30,9 @@
     <label class="h3 label-default">我的书柜</label>
     <table class="table table-bordered text-center">
         <tr>
-            <td>书的名字</td>
-            <td>书的价格</td>
-            <td>书的数量</td>
+            <td>书名</td>
+            <td>价格</td>
+            <td>数量</td>
             <td>小计</td>
             <td colspan="2">操作</td>
         </tr>
